@@ -1,0 +1,24 @@
+1. Tag docker image
+check image ID by: docker images
+tag the image: docker tag [OPTIONS] IMAGE[:TAG] [TARGET_IMAGE[:TAG]]
+example: docker tag 4b2f2fa4be5 work-order-service:v1
+If you want to use this image, update the docker-compose.yml:
+    services:
+        work-order-service:
+            image: work-order-service:v1
+            # Other configuration...
+
+
+2. Start and stop the service
+docker-compose up -d
+docker-compose down # this removes the container which is fine
+
+
+3. Rebuild the service, use when you change the source code
+docker-compose down
+docker-compose build --no-cache # no-cache creates a new image every time
+docker-compose up -d
+
+
+4. Clean up dangling images
+docker image prune -f
