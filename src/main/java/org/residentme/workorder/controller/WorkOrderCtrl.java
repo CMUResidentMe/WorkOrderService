@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.residentme.workorder.data.EntryPermission;
 import org.residentme.workorder.data.WorkStatus;
+import org.residentme.workorder.dto.WorkOrderDTO;
 import org.residentme.workorder.entity.WorkOrder;
 import org.residentme.workorder.exception.NoneWorkOrderException;
 import org.residentme.workorder.kafka.MsgProducer;
@@ -55,7 +56,7 @@ public class WorkOrderCtrl {
 			@Argument String detail, @Argument String preferredtime, @Argument EntryPermission entryPermission, @Argument String accessInstruction){
 		WorkOrder wk = new WorkOrder(owner, workType, priority, detail, preferredtime, entryPermission.value(), accessInstruction);
 		wk = woRepository.save(wk).block();
-		msgProducer.sendWorkOrderCreated(wk);
+		msgProducer.sendWorkOrderCreated(new WorkOrderDTO(wk));
 		return wk;
 	}
 	
@@ -71,7 +72,7 @@ public class WorkOrderCtrl {
 					findWk.setPriority(priority);
 				if (detail != null && !detail.isEmpty())
 					findWk.setDetail(detail);
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
@@ -85,7 +86,7 @@ public class WorkOrderCtrl {
 			if (optionalWk.isPresent()) {
 				WorkOrder findWk = optionalWk.get();
 				findWk.setPreferredtime(preferredtime);
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
@@ -99,7 +100,7 @@ public class WorkOrderCtrl {
 			if (optionalWk.isPresent()) {
 				WorkOrder findWk = optionalWk.get();
 				findWk.setEntryPermission(entryPermission.value());
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
@@ -113,7 +114,7 @@ public class WorkOrderCtrl {
 			if (optionalWk.isPresent()) {
 				WorkOrder findWk = optionalWk.get();
 				findWk.setAccessInstruction(accessInstruction);
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
@@ -127,7 +128,7 @@ public class WorkOrderCtrl {
 			if (optionalWk.isPresent()) {
 				WorkOrder findWk = optionalWk.get();
 				findWk.setStatus(status.value());
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
@@ -141,7 +142,7 @@ public class WorkOrderCtrl {
 			if (optionalWk.isPresent()) {
 				WorkOrder findWk = optionalWk.get();
 				findWk.setPriority(priority);
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
@@ -155,7 +156,7 @@ public class WorkOrderCtrl {
 			if (optionalWk.isPresent()) {
 				WorkOrder findWk = optionalWk.get();
 				findWk.setAssignedstaff(assignedStaff);
-				msgProducer.sendWorkOrderChanged(findWk);
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
 				return woRepository.save(findWk);
 			}
 			throw new NoneWorkOrderException("unexist workorder: " + uuid);
