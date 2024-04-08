@@ -1,5 +1,6 @@
 package org.residentme.workorder.kafka;
 
+import org.residentme.workorder.dto.WorkOrderDTO;
 import org.residentme.workorder.entity.WorkOrder;
 import org.residentme.workorder.kafka.msg.WorkOrderMsg;
 import org.residentme.workorder.util.JsonCovert;
@@ -26,13 +27,13 @@ public class MsgProducer {
     @Value("${workorderServer.workorderChanged}")
     private String workorderChanged;
 	
-	public void sendWorkOrderCreated(WorkOrder wk) {
+	public void sendWorkOrderCreated(WorkOrderDTO wk) {
 		String msg = JsonCovert.convert2Str(new WorkOrderMsg(workorderCreated, wk));
 		kafkaTemplate.send(kafkaTopic, msg);
 		logger.info(msg);
 	}
 	
-	public void sendWorkOrderChanged(WorkOrder wk) {
+	public void sendWorkOrderChanged(WorkOrderDTO wk) {
 		kafkaTemplate.send(kafkaTopic, JsonCovert.convert2Str(new WorkOrderMsg(workorderChanged, wk)));
 	}
 }
