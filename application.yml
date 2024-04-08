@@ -38,3 +38,4 @@ workorderServer:
   kafkaTopic: "work-order-events"
   workorderCreated: "workorderCreated"
   workorderChanged: "workorderChanged"
+  workorderimageChanged: "workorderimageChanged"
