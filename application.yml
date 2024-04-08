@@ -1,0 +1,40 @@
+spring:
+  server:
+    port: 3000
+  data:
+    mongodb:
+      uri: mongodb://10.91.92.73:27017/myh
+    jpa:
+      show-sql: true
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MongoDBDialect
+  graphql:
+    path: /graphql
+    schema:
+      fileExtensions: .graphqls, .gqls
+      printer:
+        enabled: true
+    graphiql:
+      enabled: true
+  kafka:
+    producer:
+      bootstrap-servers: 10.93.135.156:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      
+#json
+spring.jackson:
+  date-format: "yyyy-MM-dd HH:mm:ss"
+  default-property-inclusion: NON_NULL
+
+#log
+logging:
+  config: "file:conf/logback-spring.xml"
+
+workorderServer:
+  baseUrl: http://localhost:${spring.server.port}
+  imageBaseUri: "images"
+  kafkaTopic: "work-order-events"
+  workorderCreated: "workorderCreated"
+  workorderChanged: "workorderChanged"
