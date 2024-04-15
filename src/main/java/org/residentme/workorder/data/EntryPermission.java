@@ -3,7 +3,8 @@ package org.residentme.workorder.data;
 public enum EntryPermission {
 	
 	CALLCONFIRM("CALLCONFIRM", "CALLCONFIRM"),
-	KNOCKDOOR("KNOCKDOOR", "KNOCKDOOR");
+	KNOCKDOOR("KNOCKDOOR", "KNOCKDOOR"),
+	ALL_PERMISSIONS("ALL_PERMISSIONS", "ALL_PERMISSIONS");
 	
 	private final String value;
 	private final String name;

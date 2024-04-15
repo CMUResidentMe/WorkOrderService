@@ -1,6 +1,6 @@
 spring:
   server:
-    port: 3000
+    port: 8080
   data:
     mongodb:
       uri: mongodb://10.91.92.73:27017/myh
@@ -38,4 +38,4 @@ workorderServer:
   kafkaTopic: "work-order-events"
   workorderCreated: "workorderCreated"
   workorderChanged: "workorderChanged"
-  workorderimageChanged: "workorderimageChanged"
+  workorderDeleted: "workorderDeleted"
