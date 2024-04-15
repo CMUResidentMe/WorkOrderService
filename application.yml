@@ -34,7 +34,6 @@ logging:
 
 workorderServer:
   baseUrl: http://localhost:${spring.server.port}
-  imageBaseUri: "images"
   kafkaTopic: "work-order-events"
   workorderCreated: "workorderCreated"
   workorderChanged: "workorderChanged"

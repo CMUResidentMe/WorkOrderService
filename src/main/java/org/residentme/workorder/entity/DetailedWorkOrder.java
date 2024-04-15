@@ -1,10 +1,10 @@
 package org.residentme.workorder.entity;
 
-
 import lombok.Data;
 
 import java.util.List;
 
+import org.residentme.workorder.builder.WorkOrderBuilder;
 import org.residentme.workorder.data.WorkStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -16,50 +16,65 @@ import jakarta.persistence.GenerationType;
 
 @Data
 @TypeAlias("detailed")
-public class DetailedWorkOrder extends BasicWorkOrder {
-	
-    private String preferredTime;
-    private List<String> images;
-    private String entryPermission;
-    private String accessInstruction;
-    
-    public DetailedWorkOrder() {
-		super();
-	}
-    
-	public DetailedWorkOrder(String owner, String workType, String priority, String detail, String assignedStaff) {
-		super(owner, workType, priority, detail, assignedStaff);
-	}
+public class DetailedWorkOrder {
 
-	public String getPreferredTime() {
-		return preferredTime;
-	}
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String uuid;
+	private String owner; // user UUID
+	private String status;
+	private String workType;
+	private String priority;
+	private String preferredTime;
+	private String entryPermission;
+	private String accessInstruction;
+	private String detail;
+	private List<String> images;
+	private String assignedStaff;
 
-	public void setPreferredTime(String preferredTime) {
+	public DetailedWorkOrder() {
+    }
+
+	public DetailedWorkOrder(DetailedWorkOrder workorder) {
+		
+    }
+
+	public DetailedWorkOrder(String owner, String workType, String priority, String preferredTime,
+			String entryPermission, String accessInstruction, String detail, List<String> images) {
+		this.owner = owner;
+		this.workType = workType;
+		this.priority = priority;
 		this.preferredTime = preferredTime;
-	}
-
-	public List<String> getImages() {
-		return images;
-	}
-
-	public void setImages(List<String> images) {
-		this.images = images;
-	}
-
-	public String getEntryPermission() {
-		return entryPermission;
-	}
-
-	public void setEntryPermission(String entryPermission) {
 		this.entryPermission = entryPermission;
-	}
-
-	public String getAccessInstruction() {
-		return accessInstruction;
-	}
-
-	public void setAccessInstruction(String accessInstruction) {
 		this.accessInstruction = accessInstruction;
+		this.detail = detail;
+		this.images = images;
+		this.assignedStaff = null;
+		this.status = WorkStatus.OPEN.value();
+	}
+
+	public DetailedWorkOrder(String owner, String workType, String priority, String preferredTime,
+			String entryPermission, String accessInstruction, String detail, List<String> images,
+			String assignedStaff) {
+		this.owner = owner;
+		this.workType = workType;
+		this.priority = priority;
+		this.preferredTime = preferredTime;
+		this.entryPermission = entryPermission;
+		this.accessInstruction = accessInstruction;
+		this.detail = detail;
+		this.images = images;
+		this.assignedStaff = null;
+		this.status = WorkStatus.OPEN.value();
+		;
+		this.assignedStaff = assignedStaff;
+	}
+
+	public String getAssignedStaff() {
+		return assignedStaff;
+	}
+
+	public void setAssignedStaff(String assignedStaff) {
+		this.assignedStaff = assignedStaff;
 	}
 }

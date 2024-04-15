@@ -1,13 +1,14 @@
 package org.residentme.workorder.builder.imp;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.residentme.workorder.builder.WorkOrderBuilder;
 import org.residentme.workorder.data.EntryPermission;
+import org.residentme.workorder.data.Priority;
 import org.residentme.workorder.data.WorkStatus;
-import org.residentme.workorder.entity.BasicWorkOrder;
 import org.residentme.workorder.entity.DetailedWorkOrder;
-import org.residentme.workorder.repository.WorkOrderRepository;
+import org.residentme.workorder.repository.DetailedWorkOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,20 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
-	
-	@Autowired
-	private WorkOrderRepository woRepository;
-	
+
     private String owner;  //user UUID
     private String workType;
-    private String priority;
+    private Priority priority;
     private String detail;
-    private String assignedStaff;
     private String status;
     private String preferredTime;
     private List<String> images;
     private String entryPermission;
     private String accessInstruction;
+    private Optional<String> assignedStaff;
 
 	@Override
 	public void reset() {
@@ -36,11 +34,12 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 		this.workType = null;
 		this.priority = null;
 		this.detail = null;
-		this.assignedStaff = null;
 		this.status = WorkStatus.OPEN.value();
 		this.preferredTime = "";
 		this.entryPermission = null;
 		this.accessInstruction = null;
+		this.images = null;
+		this.assignedStaff = null;
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 	}
 
 	@Override
-	public void setPriority(String priority) {
+	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
 
@@ -69,12 +68,6 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 	}
 
 	@Override
-	public void uploadImages(List<String> images) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void setEntryPermission(EntryPermission entryPermission) {
 		this.entryPermission = entryPermission.value();
 	}
@@ -84,28 +77,28 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 		this.accessInstruction = accessInstruction;
 	}
 
-	public void setAssignedStaff(String assignedStaff) {
+	public void setAssignedStaff(Optional<String> assignedStaff) {
 		this.assignedStaff = assignedStaff;
 	}
 
 	public void setPreferredTime(String preferredTime) {
 		this.preferredTime = preferredTime;
 	}
+	
 
 	@Override
-	public BasicWorkOrder build() {
-		BasicWorkOrder workOrder;
-		if (this.preferredTime != null || this.entryPermission != null || this.accessInstruction != null) {
-			workOrder = new DetailedWorkOrder(this.owner, this.workType, this.priority, this.detail, this.assignedStaff);
-			((DetailedWorkOrder)workOrder).setPreferredTime(this.preferredTime);
-			((DetailedWorkOrder)workOrder).setEntryPermission(this.entryPermission);
-			((DetailedWorkOrder)workOrder).setAccessInstruction(this.accessInstruction);
-			// Additional logic for images and other detailed work order fields
-		} else {
-			workOrder = new BasicWorkOrder(this.owner, this.workType, this.priority, this.detail, this.assignedStaff);
-		}
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
+
+	@Override
+	public DetailedWorkOrder build() {
+		DetailedWorkOrder workOrder;
+		workOrder = new DetailedWorkOrder(this.owner, this.workType, this.priority.value(), this.preferredTime, this.entryPermission, 
+					this.accessInstruction, this.detail, this.images);
+		workOrder.setAssignedStaff(assignedStaff.get());
 		workOrder.setStatus(this.status);
-		return woRepository.save(workOrder).block();
+		return workOrder;
 	}
 
 
