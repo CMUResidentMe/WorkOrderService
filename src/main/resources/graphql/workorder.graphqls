@@ -10,32 +10,39 @@
     KNOCKDOOR
     ALL_PERMISSIONS
   }
-
+  
+  enum Priority{
+    High
+    Medium
+    Low
+  }
+  
   type DetailedWorkOrder{
     uuid: String!
     owner: String!
     workType: String
-    priority: Int
+    priority: Priority
     detail: String
     status: WorkStatus
-    assignedStaff: String
     accessInstruction: String
     preferredTime: String
     entryPermission: EntryPermission
     images: [String!]
+    assignedStaff: String
   }
 
   type Query {
     workOrders: [DetailedWorkOrder!]
     workOrdersByOwner(ownerUuid: String!): [DetailedWorkOrder!]
+    workOrdersUnassined: [DetailedWorkOrder!]
     workOrdersByAssignedStaff(assignedStaffUuid: String!): [DetailedWorkOrder!]
     workOrder(uuid: String!): DetailedWorkOrder
   }
 
   type Mutation {
-    createWorkOrder(owner: String!, workType: String, priority: Int, detail: String, assignedStaff: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission): DetailedWorkOrder
-    changeWorkOrder(uuid: String!, workType: String, priority: Int, detail: String, assignedStaff: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission): DetailedWorkOrder
+    createWorkOrder(owner: String!, workType: String!, priority: Priority!, detail: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission, images: [String!]): DetailedWorkOrder
+    changeWorkOrder(uuid: String!, workType: String, priority: Priority, detail: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission, images: [String!]): DetailedWorkOrder
     updateWorkOrderStatus(uuid: String!, status: WorkStatus!): DetailedWorkOrder
-    uploadImages(uuid: String!, images: [String!]): DetailedWorkOrder
+    assignedStaff(uuid: String!, assignedStaff: String): DetailedWorkOrder
     cancelWorkOrder(uuid: String!): String
   }
