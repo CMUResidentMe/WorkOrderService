@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class WorkOrderDirector {
@@ -17,9 +16,10 @@ public class WorkOrderDirector {
   @Autowired
   private WorkOrderBuilder builder;
 
-  public void constructDetailedWorkOrder(String owner, String workType, Priority priority, String preferredTime, EntryPermission entryPermission,
+  public void constructDetailedWorkOrder(String semanticId, String owner, String workType, Priority priority, String preferredTime, EntryPermission entryPermission,
 			String accessInstruction, String detail, List<String> images) {
         builder.reset();
+        builder.setSemanticId(semanticId);
         builder.setOwner(owner);
         builder.setWorkType(workType);
         builder.setPriority(priority);

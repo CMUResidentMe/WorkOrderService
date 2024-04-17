@@ -3,7 +3,8 @@ spring:
     port: 8080
   data:
     mongodb:
-      uri: mongodb://10.91.92.73:27017/myh
+      database: WorkOrderServiceDB
+      uri: mongodb+srv://wenxiyan:wenxiyan@cluster0.xb8in0m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
     jpa:
       show-sql: true
       properties:
@@ -19,7 +20,7 @@ spring:
       enabled: true
   kafka:
     producer:
-      bootstrap-servers: 10.93.135.156:29092
+      bootstrap-servers: 127.0.0.1:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       

@@ -3,6 +3,7 @@ package org.residentme.workorder.controller;
 
 import graphql.GraphQLError;
 import org.residentme.workorder.builder.imp.WorkOrderDirector;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +15,7 @@ import org.residentme.workorder.data.Priority;
 import org.residentme.workorder.data.WorkStatus;
 import org.residentme.workorder.dto.WorkOrderDTO;
 import org.residentme.workorder.entity.DetailedWorkOrder;
+import org.residentme.workorder.service.SequenceGeneratorService;
 import org.residentme.workorder.exception.NoneWorkOrderException;
 import org.residentme.workorder.kafka.MsgProducer;
 import org.residentme.workorder.repository.DetailedWorkOrderRepository;
@@ -34,6 +36,9 @@ import org.springframework.stereotype.Controller;
 public class WorkOrderCtrl {
 	
 	private static final Logger logger = LoggerFactory.getLogger(WorkOrderCtrl.class);
+
+	@Autowired
+    private SequenceGeneratorService sequenceGenerator;
 	
 	@Autowired
 	private DetailedWorkOrderRepository detailedWoRepository;
@@ -50,14 +55,14 @@ public class WorkOrderCtrl {
 	}
 
 	@QueryMapping
-	public Mono<DetailedWorkOrder> findWorkOrderById(@Argument String uuid) {
+	public Mono<DetailedWorkOrder> workOrder(@Argument String uuid) {
 		return detailedWoRepository.findById(uuid)
 				.switchIfEmpty(Mono.error(new NoneWorkOrderException("Work order does not exist: " + uuid)));
 	}
 
 
 	@QueryMapping
-	public Flux<DetailedWorkOrder> findWorkOrdersByOwner(@Argument String ownerUuid) {
+	public Flux<DetailedWorkOrder> workOrdersByOwner(@Argument String ownerUuid) {
 		logger.info("Querying work orders by owner UUID: {}", ownerUuid);
 		DetailedWorkOrder workOrder = new DetailedWorkOrder();
 		workOrder.setOwner(ownerUuid);
@@ -68,7 +73,7 @@ public class WorkOrderCtrl {
 	}
 	
 	@QueryMapping
-	public Flux<DetailedWorkOrder> findWorkOrdersUnassined(){
+	public Flux<DetailedWorkOrder> workOrdersUnassigned(){
 		DetailedWorkOrder workOrder = new DetailedWorkOrder();
 		workOrder.setAssignedStaff(null);
 		ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("assignedStaff", match -> match.exact()).withIgnorePaths("uuid");
@@ -76,7 +81,7 @@ public class WorkOrderCtrl {
 	}
 
 	@QueryMapping
-	public Flux<DetailedWorkOrder> findWorkOrdersByAssignedStaff(@Argument String assignedStaffUuid) {
+	public Flux<DetailedWorkOrder> workOrdersByAssignedStaff(@Argument String assignedStaffUuid) {
 		logger.info("Querying work orders by assigned staff UUID: {}", assignedStaffUuid);
 		DetailedWorkOrder workOrder = new DetailedWorkOrder();
 		workOrder.setAssignedStaff(assignedStaffUuid);
@@ -84,40 +89,87 @@ public class WorkOrderCtrl {
 		return detailedWoRepository.findAll(Example.of(workOrder, matcher));
 	}
 
-
 	@MutationMapping
 	public Mono<DetailedWorkOrder> createWorkOrder(@Argument String owner, @Argument String workType, @Argument Priority priority,
-												@Argument String preferredTime, @Argument EntryPermission entryPermission,  @Argument String accessInstruction, 
-												@Argument String detail, @Argument List<String> images) {
-		workOrderDirector.constructDetailedWorkOrder(owner, workType, priority, preferredTime, entryPermission, accessInstruction, detail, images);
-		DetailedWorkOrder wk = new DetailedWorkOrder(workOrderDirector.build());
-		wk = detailedWoRepository.save(wk).block();
-		WorkOrderDTO res = new WorkOrderDTO(wk);
+                                                   @Argument String preferredTime, @Argument EntryPermission entryPermission, @Argument String accessInstruction,
+                                                   @Argument String detail, @Argument List<String> images) {
+        Long semanticId = sequenceGenerator.generateSequence("workorder_sequence").block();
+        workOrderDirector.constructDetailedWorkOrder("WO-" + semanticId, owner, workType, priority, preferredTime, entryPermission, accessInstruction, detail, images);
+        DetailedWorkOrder workOrder = workOrderDirector.build();
+        workOrder = detailedWoRepository.save(workOrder).block();
+		WorkOrderDTO res = new WorkOrderDTO(workOrder);
 		msgProducer.sendWorkOrderCreated(res);
-		return Mono.just(wk);
-	}
-	
+		return Mono.just(workOrder);
+    }
+
 	@MutationMapping
 	public Mono<DetailedWorkOrder> changeWorkOrder(@Argument String uuid, @Argument Optional<String> workType, @Argument Optional<Priority> priority,
-												@Argument Optional<String> detail, @Argument Optional<String> accessInstruction, 
-												@Argument Optional<String> preferredTime, @Argument Optional<EntryPermission> entryPermission, 
-												@Argument Optional<List<String>> images) {
-		return detailedWoRepository.findById(uuid).map(Optional::of).defaultIfEmpty(Optional.empty()).flatMap(optionalWk -> {
-			if (optionalWk.isPresent()) {
-				DetailedWorkOrder findWk = optionalWk.get();
-				if(workType.isPresent()) findWk.setWorkType(workType.get());
-				if(priority.isPresent()) findWk.setPriority(priority.get().value());
-				if(detail.isPresent()) findWk.setDetail(detail.get());
-				if(accessInstruction.isPresent()) findWk.setAccessInstruction(accessInstruction.get());
-				if(preferredTime.isPresent()) findWk.setPreferredTime(preferredTime.get());
-				if(entryPermission.isPresent()) findWk.setEntryPermission(entryPermission.get().value());
-				if(images.isPresent()) findWk.setImages(images.get());
-				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
-				return detailedWoRepository.save(findWk);
+													@Argument Optional<String> detail, @Argument Optional<String> accessInstruction,
+													@Argument Optional<String> preferredTime, @Argument Optional<EntryPermission> entryPermission,
+													@Argument Optional<List<String>> images) {
+		return detailedWoRepository.findById(uuid).flatMap(existingWorkOrder -> {
+			StringBuilder changeDetails = new StringBuilder();
+			workType.ifPresent(newType -> {
+				if (!newType.equals(existingWorkOrder.getWorkType())) {
+					existingWorkOrder.setWorkType(newType);
+					changeDetails.append("Work Type changed to ").append(newType).append(". ");
+				}
+			});
+			priority.ifPresent(newPriority -> {
+				if (!newPriority.value().equals(existingWorkOrder.getPriority())) {
+					existingWorkOrder.setPriority(newPriority.value());
+					changeDetails.append("Priority changed from ")
+								 .append(existingWorkOrder.getPriority())
+								 .append(" to ")
+								 .append(newPriority.value())
+								 .append(". ");
+				}
+			});
+			detail.ifPresent(newDetail -> {
+				if (!newDetail.equals(existingWorkOrder.getDetail())) {
+					existingWorkOrder.setDetail(newDetail);
+					changeDetails.append("Detail changed. ");
+				}
+			});
+			accessInstruction.ifPresent(newAccessInstruction -> {
+				if (!newAccessInstruction.equals(existingWorkOrder.getAccessInstruction())) {
+					existingWorkOrder.setAccessInstruction(newAccessInstruction);
+					changeDetails.append("Access Instruction changed. ");
+				}
+			});
+			preferredTime.ifPresent(newPreferredTime -> {
+				if (!newPreferredTime.equals(existingWorkOrder.getPreferredTime())) {
+					existingWorkOrder.setPreferredTime(newPreferredTime);
+					changeDetails.append("Preferred Time changed. ");
+				}
+			});
+			entryPermission.ifPresent(newEntryPermission -> {
+				if (!newEntryPermission.value().equals(existingWorkOrder.getEntryPermission())) {
+					existingWorkOrder.setEntryPermission(newEntryPermission.value());
+					changeDetails.append("Entry Permission changed from ")
+								 .append(existingWorkOrder.getEntryPermission())
+								 .append(" to ")
+								 .append(newEntryPermission.value())
+								 .append(". ");
+				}
+			});
+			images.ifPresent(newImages -> {
+				if (!newImages.equals(existingWorkOrder.getImages())) {
+					existingWorkOrder.setImages(newImages);
+					changeDetails.append("Images changed. ");
+				}
+			});
+			if (changeDetails.length() > 0) {
+				WorkOrderDTO workOrderDTO = new WorkOrderDTO(existingWorkOrder);
+				// Use semanticId for user-friendly notification
+				String changeMsg = "Changes to Work Order #" + existingWorkOrder.getSemanticId() + ": " + changeDetails.toString();
+				workOrderDTO.setChangeDescription(changeMsg);
+				msgProducer.sendWorkOrderChanged(workOrderDTO);
 			}
-			throw new NoneWorkOrderException("unexist workorder: " + uuid);
-		});
+			return detailedWoRepository.save(existingWorkOrder);
+		}).switchIfEmpty(Mono.error(new NoneWorkOrderException("Work order does not exist: " + uuid)));
 	}
+
 
 	@MutationMapping
 	public Mono<DetailedWorkOrder> updateWorkOrderStatus(@Argument String uuid, @Argument WorkStatus status) {
@@ -132,24 +184,32 @@ public class WorkOrderCtrl {
 		});
 	}
 
-
 	@MutationMapping
-	public Mono<DetailedWorkOrder> assignedStaff(@Argument String uuid, @Argument Optional<String> assignedStaff) {
-		return detailedWoRepository.findById(uuid).map(Optional::of).defaultIfEmpty(Optional.empty()).flatMap(optionalWk -> {
-			if (optionalWk.isPresent()) {
-				DetailedWorkOrder findWk = optionalWk.get();
-				if(assignedStaff.isPresent()) {
-					findWk.setAssignedStaff(assignedStaff.get());
-				}else {
-					findWk.setAssignedStaff(null);
-				}
-				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(findWk));
-				return detailedWoRepository.save(findWk);
+	public Mono<DetailedWorkOrder> assignWorkOrderStaff(@Argument String uuid, @Argument String staffId) {
+		return detailedWoRepository.findById(uuid).flatMap(workOrder -> {
+			if (workOrder.getStatus().equals(WorkStatus.OPEN.value())) {
+				workOrder.setAssignedStaff(staffId);
+				workOrder.setStatus(WorkStatus.ASSIGNED.value());
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(workOrder)); // Notify change
+				return detailedWoRepository.save(workOrder);
 			}
-			throw new NoneWorkOrderException("unexist workorder: " + uuid);
-		});
+			return Mono.error(new IllegalStateException("Work order is already assigned or closed"));
+		}).switchIfEmpty(Mono.error(new NoneWorkOrderException("Work order does not exist: " + uuid)));
 	}
-
+	
+	@MutationMapping
+	public Mono<DetailedWorkOrder> unassignWorkOrderStaff(@Argument String uuid) {
+		return detailedWoRepository.findById(uuid).flatMap(workOrder -> {
+			if (workOrder.getStatus().equals(WorkStatus.ASSIGNED.value())) {
+				workOrder.setAssignedStaff(null);
+				workOrder.setStatus(WorkStatus.OPEN.value());
+				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(workOrder));
+				return detailedWoRepository.save(workOrder);
+			}
+			return Mono.error(new IllegalStateException("Work order is not assigned"));
+		}).switchIfEmpty(Mono.error(new NoneWorkOrderException("Work order does not exist: " + uuid)));
+	}
+	
 
 	@MutationMapping
 	public Mono<String> cancelWorkOrder(@Argument String uuid) {

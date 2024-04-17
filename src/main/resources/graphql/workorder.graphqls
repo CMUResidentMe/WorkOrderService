@@ -1,48 +1,84 @@
-  enum WorkStatus {
-    OPEN
-    ASSIGNED
-    ONGOING
-    FINISHED
-  }
 
-  enum EntryPermission{
-    CALLCONFIRM
-    KNOCKDOOR
-    ALL_PERMISSIONS
-  }
-  
-  enum Priority{
-    High
-    Medium
-    Low
-  }
-  
-  type DetailedWorkOrder{
-    uuid: String!
-    owner: String!
-    workType: String
-    priority: Priority
-    detail: String
-    status: WorkStatus
-    accessInstruction: String
-    preferredTime: String
-    entryPermission: EntryPermission
+enum WorkStatus {
+  OPEN
+  ASSIGNED
+  ONGOING
+  FINISHED
+}
+
+enum EntryPermission {
+  CALLCONFIRM
+  KNOCKDOOR
+  ALL_PERMISSIONS
+}
+
+enum Priority {
+  High
+  Medium
+  Low
+}
+
+type DetailedWorkOrder {
+  uuid: String!
+  semanticId: String!
+  owner: String!
+  workType: String
+  priority: Priority
+  detail: String
+  status: WorkStatus
+  accessInstruction: String
+  preferredTime: String
+  entryPermission: EntryPermission
+  images: [String!]
+  assignedStaff: String
+}
+
+type Query {
+  workOrders: [DetailedWorkOrder!]
+  workOrdersByOwner(ownerUuid: String!): [DetailedWorkOrder!]
+  workOrdersUnassigned: [DetailedWorkOrder!]
+  workOrdersByAssignedStaff(assignedStaffUuid: String!): [DetailedWorkOrder!]
+  workOrder(uuid: String!): DetailedWorkOrder
+}
+
+type Mutation {
+  createWorkOrder(
+    owner: String!,
+    workType: String!,
+    priority: Priority!,
+    detail: String,
+    accessInstruction: String,
+    preferredTime: String,
+    entryPermission: EntryPermission,
     images: [String!]
-    assignedStaff: String
-  }
+  ): DetailedWorkOrder
 
-  type Query {
-    workOrders: [DetailedWorkOrder!]
-    workOrdersByOwner(ownerUuid: String!): [DetailedWorkOrder!]
-    workOrdersUnassined: [DetailedWorkOrder!]
-    workOrdersByAssignedStaff(assignedStaffUuid: String!): [DetailedWorkOrder!]
-    workOrder(uuid: String!): DetailedWorkOrder
-  }
+  changeWorkOrder(
+    uuid: String!,
+    workType: String,
+    priority: Priority,
+    detail: String,
+    accessInstruction: String,
+    preferredTime: String,
+    entryPermission: EntryPermission,
+    images: [String!]
+  ): DetailedWorkOrder
 
-  type Mutation {
-    createWorkOrder(owner: String!, workType: String!, priority: Priority!, detail: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission, images: [String!]): DetailedWorkOrder
-    changeWorkOrder(uuid: String!, workType: String, priority: Priority, detail: String, accessInstruction: String, preferredTime: String, entryPermission: EntryPermission, images: [String!]): DetailedWorkOrder
-    updateWorkOrderStatus(uuid: String!, status: WorkStatus!): DetailedWorkOrder
-    assignedStaff(uuid: String!, assignedStaff: String): DetailedWorkOrder
-    cancelWorkOrder(uuid: String!): String
-  }
+  updateWorkOrderStatus(
+    uuid: String!,
+    status: WorkStatus!
+  ): DetailedWorkOrder
+
+  assignWorkOrderStaff(
+    uuid: String!,
+    assignedStaff: String!
+  ): DetailedWorkOrder
+
+  unassignWorkOrderStaff(
+    uuid: String!
+  ): DetailedWorkOrder
+
+  cancelWorkOrder(
+    uuid: String!
+  ): String
+}

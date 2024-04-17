@@ -8,8 +8,6 @@ import org.residentme.workorder.data.EntryPermission;
 import org.residentme.workorder.data.Priority;
 import org.residentme.workorder.data.WorkStatus;
 import org.residentme.workorder.entity.DetailedWorkOrder;
-import org.residentme.workorder.repository.DetailedWorkOrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +15,12 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 
+	private String semanticId;
     private String owner;  //user UUID
     private String workType;
     private Priority priority;
     private String detail;
-    private String status;
+    private WorkStatus status;
     private String preferredTime;
     private List<String> images;
     private String entryPermission;
@@ -34,13 +33,19 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 		this.workType = null;
 		this.priority = null;
 		this.detail = null;
-		this.status = WorkStatus.OPEN.value();
+		this.status = WorkStatus.OPEN;
 		this.preferredTime = "";
 		this.entryPermission = null;
 		this.accessInstruction = null;
 		this.images = null;
 		this.assignedStaff = null;
+		this.semanticId = null;
 	}
+
+	@Override
+    public void setSemanticId(String semanticId) {
+        this.semanticId = semanticId;
+    }
 
 	@Override
 	public void setOwner(String owner) {
@@ -64,7 +69,7 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 
 	@Override
 	public void setStatus(WorkStatus status) {
-		this.status = status.value();
+		this.status = status;
 	}
 
 	@Override
@@ -85,7 +90,6 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 		this.preferredTime = preferredTime;
 	}
 	
-
 	@Override
 	public void setImages(List<String> images) {
 		this.images = images;
@@ -93,11 +97,12 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 
 	@Override
 	public DetailedWorkOrder build() {
-		DetailedWorkOrder workOrder;
-		workOrder = new DetailedWorkOrder(this.owner, this.workType, this.priority.value(), this.preferredTime, this.entryPermission, 
+		DetailedWorkOrder workOrder = new DetailedWorkOrder(this.semanticId, this.owner, this.workType, this.priority.value(), this.preferredTime, this.entryPermission, 
 					this.accessInstruction, this.detail, this.images);
-		workOrder.setAssignedStaff(assignedStaff.get());
-		workOrder.setStatus(this.status);
+		if(assignedStaff != null && assignedStaff.isPresent()) {
+			workOrder.setAssignedStaff(assignedStaff.get());
+		}
+		workOrder.setStatus(this.status.value());		
 		return workOrder;
 	}
 

@@ -11,6 +11,7 @@ import org.residentme.workorder.entity.DetailedWorkOrder;
 public interface WorkOrderBuilder {
 	
 	void reset();
+	void setSemanticId(String semanticId);
 	void setOwner(String owner);
 	void setWorkType(String workType);
 	void setPriority(Priority priority);
