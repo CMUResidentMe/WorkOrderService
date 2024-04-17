@@ -1,13 +1,13 @@
 package org.residentme.workorder.dto;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.residentme.workorder.entity.DetailedWorkOrder;
 
 public class WorkOrderDTO {
 
 	private String uuid;
+	private String semanticId;
 	private String owner;
 	private String workType;
 	private String priority;
@@ -17,11 +17,12 @@ public class WorkOrderDTO {
 	private String entryPermission;
 	private String accessInstruction;
 	private List<String> images;
-	
 	private String assignedStaff;
+	private String changeDescription;
 
 	public WorkOrderDTO(DetailedWorkOrder wk) {
 		this.uuid = wk.getUuid();
+		this.semanticId = wk.getSemanticId();
 		this.owner = wk.getOwner();
 		this.workType = wk.getWorkType();
 		this.priority = wk.getPriority();
@@ -41,6 +42,14 @@ public class WorkOrderDTO {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
+
+	public String getSemanticId() {
+        return semanticId;
+    }
+
+	public void setSemanticId(String semanticId) {
+        this.semanticId = semanticId;
+    }
 
 	public String getOwner() {
 		return owner;
@@ -121,5 +130,13 @@ public class WorkOrderDTO {
 	public void setAssignedStaff(String assignedStaff) {
 		this.assignedStaff = assignedStaff;
 	}
+
+	public String getChangeDescription() {
+        return changeDescription;
+    }
+
+    public void setChangeDescription(String changeDescription) {
+        this.changeDescription = changeDescription;
+    }
 
 }
