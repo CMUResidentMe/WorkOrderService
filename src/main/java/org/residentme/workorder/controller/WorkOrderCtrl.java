@@ -89,6 +89,15 @@ public class WorkOrderCtrl {
 		return detailedWoRepository.findAll(Example.of(workOrder, matcher));
 	}
 
+	@QueryMapping
+	public Flux<DetailedWorkOrder> workOrdersByStatus(@Argument WorkStatus status) {
+		logger.info("Querying work orders by status: {}", status);
+        DetailedWorkOrder workOrder = new DetailedWorkOrder();
+        workOrder.setStatus(status.value());
+        ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("status", match -> match.exact()).withIgnorePaths("uuid");
+        return detailedWoRepository.findAll(Example.of(workOrder, matcher));
+    }
+
 	@MutationMapping
 	public Mono<DetailedWorkOrder> createWorkOrder(@Argument String owner, @Argument String workType, @Argument Priority priority,
                                                    @Argument String preferredTime, @Argument EntryPermission entryPermission, @Argument String accessInstruction,
@@ -185,10 +194,11 @@ public class WorkOrderCtrl {
 	}
 
 	@MutationMapping
-	public Mono<DetailedWorkOrder> assignWorkOrderStaff(@Argument String uuid, @Argument String staffId) {
+	public Mono<DetailedWorkOrder> assignWorkOrderStaff(@Argument String uuid, @Argument String assignedStaff) {
 		return detailedWoRepository.findById(uuid).flatMap(workOrder -> {
 			if (workOrder.getStatus().equals(WorkStatus.OPEN.value())) {
-				workOrder.setAssignedStaff(staffId);
+				System.out.println("staffId is " + assignedStaff);
+				workOrder.setAssignedStaff(assignedStaff);
 				workOrder.setStatus(WorkStatus.ASSIGNED.value());
 				msgProducer.sendWorkOrderChanged(new WorkOrderDTO(workOrder)); // Notify change
 				return detailedWoRepository.save(workOrder);

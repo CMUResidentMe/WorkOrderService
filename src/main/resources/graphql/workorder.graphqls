@@ -31,6 +31,7 @@ type DetailedWorkOrder {
   entryPermission: EntryPermission
   images: [String!]
   assignedStaff: String
+  createTime:String
 }
 
 type Query {
@@ -38,6 +39,7 @@ type Query {
   workOrdersByOwner(ownerUuid: String!): [DetailedWorkOrder!]
   workOrdersUnassigned: [DetailedWorkOrder!]
   workOrdersByAssignedStaff(assignedStaffUuid: String!): [DetailedWorkOrder!]
+  workOrdersByStatus(status: WorkStatus!): [DetailedWorkOrder!]
   workOrder(uuid: String!): DetailedWorkOrder
 }
 

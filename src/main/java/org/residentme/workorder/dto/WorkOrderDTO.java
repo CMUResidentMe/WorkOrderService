@@ -19,6 +19,7 @@ public class WorkOrderDTO {
 	private List<String> images;
 	private String assignedStaff;
 	private String changeDescription;
+	private String createTime;
 
 	public WorkOrderDTO(DetailedWorkOrder wk) {
 		this.uuid = wk.getUuid();
@@ -33,6 +34,7 @@ public class WorkOrderDTO {
 		this.accessInstruction = wk.getAccessInstruction();
 		this.images = wk.getImages();
 		this.assignedStaff = wk.getAssignedStaff();
+		this.createTime = wk.getCreateTime();
 	}
 
 	public String getUuid() {
@@ -138,5 +140,13 @@ public class WorkOrderDTO {
     public void setChangeDescription(String changeDescription) {
         this.changeDescription = changeDescription;
     }
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
 
 }
