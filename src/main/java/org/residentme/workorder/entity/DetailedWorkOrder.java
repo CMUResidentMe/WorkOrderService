@@ -2,13 +2,13 @@ package org.residentme.workorder.entity;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
+import java.text.SimpleDateFormat;
 
 import org.residentme.workorder.data.WorkStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,12 +31,24 @@ public class DetailedWorkOrder {
 	private String detail;
 	private List<String> images;
 	private String assignedStaff;
+	private String createTime;
 
 	public DetailedWorkOrder() {
     }
 
 	public DetailedWorkOrder(DetailedWorkOrder workorder) {
-		
+		this.semanticId = workorder.getSemanticId();
+		this.owner = workorder.getOwner();
+		this.workType = workorder.getWorkType();
+		this.priority = workorder.getPriority();
+		this.preferredTime = workorder.getPreferredTime();
+		this.entryPermission = workorder.getEntryPermission();
+		this.accessInstruction = workorder.getAccessInstruction();
+		this.detail = workorder.getDetail();
+		this.images = workorder.getImages();
+		this.assignedStaff = workorder.getAssignedStaff();
+		this.status = workorder.getStatus();
+		this.createTime = workorder.getCreateTime();
     }
 
 	public DetailedWorkOrder(String semanticId, String owner, String workType, String priority, String preferredTime,
@@ -52,6 +64,9 @@ public class DetailedWorkOrder {
 		this.images = images;
 		this.assignedStaff = null;
 		this.status = WorkStatus.OPEN.value();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+		this.createTime = sdf.format(new Date());
 	}
 
 	public String getSemanticId() {
@@ -148,6 +163,14 @@ public class DetailedWorkOrder {
 
 	public void setSemanticId(String semanticId) {
 		this.semanticId = semanticId;
+	}
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
 	}
 	
 }
