@@ -43,6 +43,10 @@ type Query {
   workOrder(uuid: String!): DetailedWorkOrder
 }
 
+type CancelWorkOrderOutPut{
+	uuid: String!
+}
+
 type Mutation {
   createWorkOrder(
     owner: String!,
@@ -82,5 +86,5 @@ type Mutation {
 
   cancelWorkOrder(
     uuid: String!
-  ): String
+  ): CancelWorkOrderOutPut
 }
