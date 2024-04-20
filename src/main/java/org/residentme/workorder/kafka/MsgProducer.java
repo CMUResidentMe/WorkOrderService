@@ -1,9 +1,7 @@
 package org.residentme.workorder.kafka;
 
-import org.residentme.workorder.dto.WorkOrderDTO;
-import org.residentme.workorder.entity.DetailedWorkOrder;
-import org.residentme.workorder.kafka.msg.WorkOrderMsg;
-import org.residentme.workorder.util.JsonCovert;
+import org.residentme.workorder.dto.RmNotification;
+import org.residentme.workorder.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +28,21 @@ public class MsgProducer {
     @Value("${workorderServer.workorderDeleted}")
     private String workorderDeleted;
 	
-	public void sendWorkOrderCreated(WorkOrderDTO wk) {
-		String msg = JsonCovert.convert2Str(new WorkOrderMsg(workorderCreated, wk));
+	public void sendWorkOrderCreated(RmNotification woInfo) {
+		String msg = JsonUtil.convert2Str(woInfo);
 		kafkaTemplate.send(kafkaTopic, msg);
 		logger.info(msg);
 	}
 	
-	public void sendWorkOrderChanged(WorkOrderDTO wk) {
-		kafkaTemplate.send(kafkaTopic, JsonCovert.convert2Str(new WorkOrderMsg(workorderChanged, wk)));
+	public void sendWorkOrderChanged(RmNotification woInfo) {
+		String msg = JsonUtil.convert2Str(woInfo);
+		kafkaTemplate.send(kafkaTopic, msg);
+		logger.info(msg);
 	}
 	
-	public void sendWorkOrderDeleted(WorkOrderDTO wk) {
-		kafkaTemplate.send(kafkaTopic, JsonCovert.convert2Str(new WorkOrderMsg(workorderDeleted, wk)));
+	public void sendWorkOrderDeleted(RmNotification woInfo) {
+		String msg = JsonUtil.convert2Str(woInfo);
+		kafkaTemplate.send(kafkaTopic, msg);
+		logger.info(msg);
 	}
 }
