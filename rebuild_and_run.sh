@@ -1,28 +1,28 @@
 #!/bin/bash
 
-# Navigate to the directory containing your docker-compose.yml file
-cd "$(dirname "$0")"
+# Set environment variables
+IMAGE_NAME="work-order-service"
+CONTAINER_NAME="work-order-service"
+PORT_MAPPING="8001:8001"
 
-# Check if docker-compose is installed
-if ! [ -x "$(command -v docker-compose)" ]; then
-  echo 'Error: docker-compose is not installed.' >&2
-  exit 1
+# Build Docker image
+echo "Building Docker image..."
+docker build -t $IMAGE_NAME .
+
+# Check if the container is already running, stop it
+if [ $(docker ps -q -f name=$CONTAINER_NAME) ]; then
+    echo "Stopping existing container..."
+    docker stop $CONTAINER_NAME
 fi
 
-# Stop all running containers based on the docker-compose file
-echo "Stopping all running containers..."
-docker-compose down
+# Check if the container exists, remove it
+if [ $(docker ps -aq -f status=exited -f name=$CONTAINER_NAME) ]; then
+    echo "Removing existing container..."
+    docker rm $CONTAINER_NAME
+fi
 
-# Cleanup dangling images
-echo "Cleaning up dangling Docker images..."
-docker image prune -f
+# Run the container from the image
+echo "Running new container..."
+docker run -d --name $CONTAINER_NAME -p $PORT_MAPPING $IMAGE_NAME
 
-# Build the images using docker-compose
-echo "Building Docker images..."
-docker-compose build --no-cache
-
-# Run the containers using docker-compose
-echo "Starting containers..."
-docker-compose up -d
-
-echo "Containers are up and running."
+echo "Container $CONTAINER_NAME is running on port $PORT_MAPPING"

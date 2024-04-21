@@ -1,21 +1,10 @@
-# Use an official Node runtime as a parent image
-FROM node:16
+FROM openjdk:17-slim as build
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+ARG JAR_FILE=target/*.jar
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+COPY ${JAR_FILE} app.jar
+COPY run.sh run.sh
+COPY application.yml application.yml
+COPY conf conf
 
-# Install any needed packages specified in package.json
-RUN npm install
-
-# Copy the rest of your application's source code from your host to your image's filesystem.
-COPY . .
-
-# Make port available to the world outside this container
-EXPOSE 8080
-
-# Run app when the container launches
-CMD ["npm", "start"]
+ENTRYPOINT ["sh", "run.sh"]
