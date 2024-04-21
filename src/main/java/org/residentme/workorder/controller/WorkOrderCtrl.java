@@ -131,15 +131,15 @@ public class WorkOrderCtrl {
 		woInfo.setSourceID(workOrder.getUuid());
 		sb.append("Work Order #");
 		sb.append(workOrder.getSemanticId());
-		sb.append(", Work Type:");
+		sb.append(", work type:");
 		sb.append(workType);
-		sb.append(", Priority:");
+		sb.append(", priority:");
 		sb.append(priority);
-		sb.append(", Preferred Time:");
+		sb.append(", preferred Time:");
 		sb.append(preferredTime);
-		sb.append(", Entry Permission:");
+		sb.append(", entry permission:");
 		sb.append(entryPermission);
-		sb.append(", Detail:");
+		sb.append(", detail:");
 		sb.append(detail);
 		woInfo.setMessage(sb.toString());
 		msgProducer.sendWorkOrderCreated(woInfo);
@@ -182,7 +182,7 @@ public class WorkOrderCtrl {
 		sb.append(existingWorkOrder.getSemanticId());
 		sb.append(", ");
 		if (workType.isPresent() && !workType.get().equals(existingWorkOrder.getWorkType())) {
-			sb.append("Work Type changed from ");
+			sb.append("work type changed from ");
 			sb.append(existingWorkOrder.getWorkType());
 			sb.append(" to ");
 			sb.append(workType.get());
@@ -192,7 +192,7 @@ public class WorkOrderCtrl {
 		}
 
 		if (priority.isPresent() && !priority.get().value().equals(existingWorkOrder.getPriority())) {
-			sb.append("Priority changed from ");
+			sb.append("priority changed from ");
 			sb.append(existingWorkOrder.getPriority());
 			sb.append(" to ");
 			sb.append(priority.get().value());
@@ -202,7 +202,7 @@ public class WorkOrderCtrl {
 		}
 
 		if (detail.isPresent() && !detail.get().equals(existingWorkOrder.getDetail())) {
-			sb.append("Detail changed.");
+			sb.append("detail changed.");
 			// sb.append(existingWorkOrder.getDetail());
 			// sb.append(" to ");
 			// sb.append(detail.get());
@@ -213,7 +213,7 @@ public class WorkOrderCtrl {
 
 		if (accessInstruction.isPresent()
 				&& !accessInstruction.get().equals(existingWorkOrder.getAccessInstruction())) {
-			sb.append("Access Instruction changed from ");
+			sb.append("access instruction changed from ");
 			sb.append(existingWorkOrder.getAccessInstruction());
 			sb.append(" to ");
 			sb.append(accessInstruction.get());
@@ -223,7 +223,7 @@ public class WorkOrderCtrl {
 		}
 
 		if (preferredTime.isPresent() && !preferredTime.get().equals(existingWorkOrder.getPreferredTime())) {
-			sb.append("Preferred Time changed from ");
+			sb.append("preferred time changed from ");
 			sb.append(existingWorkOrder.getPreferredTime());
 			sb.append(" to ");
 			sb.append(preferredTime.get());
@@ -236,7 +236,7 @@ public class WorkOrderCtrl {
 		if (entryPermission.isPresent()
 				&& !entryPermission.get().value().equals(existingWorkOrder.getEntryPermission())) {
 			
-			sb.append("Entry Permission changed from ");
+			sb.append("entry Permission changed from ");
 			sb.append(existingWorkOrder.getEntryPermission());
 			sb.append(" to ");
 			sb.append(entryPermission.get().value());
@@ -246,7 +246,7 @@ public class WorkOrderCtrl {
 		}
 
 		if (images.isPresent() && !images.get().equals(existingWorkOrder.getImages())) {
-			sb.append("images change.");
+			sb.append("images changed.");
 			isChanged = true;
 		}
 		if(isChanged) {
@@ -265,7 +265,7 @@ public class WorkOrderCtrl {
 			sb.append("Work Order #");
 			sb.append(workOrder.getSemanticId());
 			sb.append(", ");
-			sb.append("Status changed from ");
+			sb.append("status changed from ");
 			sb.append(workOrder.getStatus());
 			sb.append(" to ");
 			sb.append(status.value());
@@ -293,12 +293,12 @@ public class WorkOrderCtrl {
 			sb.append("Work Order #");
 			sb.append(workOrder.getSemanticId());
 			sb.append(", ");
-			sb.append("Status changed to ");
+			sb.append("status changed to ");
 			sb.append(WorkStatus.ASSIGNED.value());
 			sb.append(", ");
-			sb.append("Assigned staff is  ");
-			sb.append(assignedStaff);
-			sb.append(". ");
+			sb.append("Assigned staff is updated.");
+			// sb.append(assignedStaff);
+			// sb.append(". ");
 			woInfo.setMessage(sb.toString());
 			msgProducer.sendWorkOrderChanged(woInfo);			
 			RmNotification noti = new RmNotification(woInfo);
@@ -324,8 +324,8 @@ public class WorkOrderCtrl {
 			sb.append("Status changed to ");
 			sb.append(WorkStatus.OPEN.value());
 			sb.append(", ");
-			sb.append(workOrder.getAssignedStaff());
-			sb.append(" will not take this ticket.");
+			// sb.append(workOrder.getAssignedStaff());
+			sb.append("no staff is taking this work order.");
 			woInfo.setMessage(sb.toString());
 			msgProducer.sendWorkOrderChanged(woInfo);			
 			if(workOrder.getAssignedStaff() != null) {
