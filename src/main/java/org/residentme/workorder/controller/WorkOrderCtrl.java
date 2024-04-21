@@ -186,23 +186,23 @@ public class WorkOrderCtrl {
 			sb.append(existingWorkOrder.getWorkType());
 			sb.append(" to ");
 			sb.append(workType.get());
-			sb.append(", ");
+			sb.append(". ");
 			existingWorkOrder.setWorkType(workType.get());
 			isChanged = true;
 		}
 
 		if (priority.isPresent() && !priority.get().value().equals(existingWorkOrder.getPriority())) {
-			sb.append("priority changed from ");
+			sb.append("Priority changed from ");
 			sb.append(existingWorkOrder.getPriority());
 			sb.append(" to ");
 			sb.append(priority.get().value());
-			sb.append(", ");
+			sb.append(". ");
 			existingWorkOrder.setPriority(priority.get().value());
 			isChanged = true;
 		}
 
 		if (detail.isPresent() && !detail.get().equals(existingWorkOrder.getDetail())) {
-			sb.append("detail changed.");
+			sb.append("Detail changed.");
 			// sb.append(existingWorkOrder.getDetail());
 			// sb.append(" to ");
 			// sb.append(detail.get());
@@ -213,21 +213,29 @@ public class WorkOrderCtrl {
 
 		if (accessInstruction.isPresent()
 				&& !accessInstruction.get().equals(existingWorkOrder.getAccessInstruction())) {
-			sb.append("access instruction changed from ");
-			sb.append(existingWorkOrder.getAccessInstruction());
-			sb.append(" to ");
-			sb.append(accessInstruction.get());
-			sb.append(", ");
+			if (accessInstruction.get() == "") {
+				sb.append("Access instruction removed.");
+			} else {
+				sb.append("Access instruction changed from ");
+				if(existingWorkOrder.getAccessInstruction().length() == 0) {
+					sb.append("none");
+				} else {
+					sb.append(existingWorkOrder.getAccessInstruction());
+				}
+				sb.append(" to ");
+				sb.append(accessInstruction.get());
+				sb.append(". ");
+			}
 			existingWorkOrder.setAccessInstruction(accessInstruction.get());
 			isChanged = true;
 		}
 
 		if (preferredTime.isPresent() && !preferredTime.get().equals(existingWorkOrder.getPreferredTime())) {
-			sb.append("preferred time changed from ");
+			sb.append("Preferred time changed from ");
 			sb.append(existingWorkOrder.getPreferredTime());
 			sb.append(" to ");
 			sb.append(preferredTime.get());
-			sb.append(", ");
+			sb.append(". ");
 			
 			existingWorkOrder.setPreferredTime(preferredTime.get());
 			isChanged = true;
@@ -236,17 +244,17 @@ public class WorkOrderCtrl {
 		if (entryPermission.isPresent()
 				&& !entryPermission.get().value().equals(existingWorkOrder.getEntryPermission())) {
 			
-			sb.append("entry Permission changed from ");
+			sb.append("Entry Permission changed from ");
 			sb.append(existingWorkOrder.getEntryPermission());
 			sb.append(" to ");
 			sb.append(entryPermission.get().value());
-			sb.append(", ");
+			sb.append(". ");
 			existingWorkOrder.setEntryPermission(entryPermission.get().value());
 			isChanged = true;
 		}
 
 		if (images.isPresent() && !images.get().equals(existingWorkOrder.getImages())) {
-			sb.append("images changed.");
+			sb.append("Images changed.");
 			isChanged = true;
 		}
 		if(isChanged) {
@@ -296,7 +304,7 @@ public class WorkOrderCtrl {
 			sb.append("status changed to ");
 			sb.append(WorkStatus.ASSIGNED.value());
 			sb.append(", ");
-			sb.append("Assigned staff is updated.");
+			sb.append("assigned staff is updated.");
 			// sb.append(assignedStaff);
 			// sb.append(". ");
 			woInfo.setMessage(sb.toString());
