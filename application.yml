@@ -20,7 +20,7 @@ spring:
       enabled: true
   kafka:
     producer:
-      bootstrap-servers: 127.0.0.1:29092
+      bootstrap-servers: host.docker.internal:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       
@@ -34,7 +34,7 @@ logging:
   config: "file:conf/logback-spring.xml"
 
 workorderServer:
-  baseUrl: http://localhost:${spring.server.port}
+  baseUrl: http://host.docker.internal:${spring.server.port}
   kafkaTopic: "work-order-events"
   workorderCreated: "workorderCreated"
   workorderChanged: "workorderChanged"
