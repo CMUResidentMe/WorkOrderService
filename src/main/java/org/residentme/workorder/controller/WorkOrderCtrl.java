@@ -339,6 +339,7 @@ public class WorkOrderCtrl {
 
 		if (images.isPresent() && !images.get().equals(existingWorkOrder.getImages())) {
 			sb.append("Images changed.");
+			existingWorkOrder.setImages(images.get());
 			isChanged = true;
 		}
 		if(isChanged) {
