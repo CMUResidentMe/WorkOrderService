@@ -1,5 +1,8 @@
 package org.residentme.workorder.data;
 
+/**
+ * Enum for the priority of a work order.
+ */
 public enum Priority {
 
 	High("High", "High"), Medium("Medium", "Medium"), Low("Low", "Low");

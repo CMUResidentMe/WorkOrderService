@@ -1,5 +1,8 @@
 package org.residentme.workorder.data;
 
+/**
+ * Enum for the status of a work order.
+ */
 public enum WorkStatus {
 	
     OPEN("OPEN", "OPEN"),

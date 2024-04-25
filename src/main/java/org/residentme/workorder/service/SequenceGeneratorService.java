@@ -11,16 +11,31 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.core.publisher.Mono;
 
 
+/**
+ * Service for generating a sequence.
+ */
 @Service
 public class SequenceGeneratorService {
 
+    /**
+     * The mongo template.
+     */
     @Autowired
     private ReactiveMongoTemplate mongoTemplate;
 
+    /**
+     * Constructor.
+     * @param mongoTemplate The mongo template.
+     */
     public SequenceGeneratorService(ReactiveMongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
+    /**
+     * Generates a sequence.
+     * @param seqName The sequence name.
+     * @return The sequence.
+     */
     public Mono<Long> generateSequence(String seqName) {
         return mongoTemplate.findAndModify(
             Query.query(Criteria.where("_id").is(seqName)),

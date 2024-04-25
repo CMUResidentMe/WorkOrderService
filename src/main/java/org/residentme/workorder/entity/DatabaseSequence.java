@@ -5,6 +5,9 @@ import org.springframework.data.annotation.TypeAlias;
 
 import lombok.Data;
 
+/**
+ * Entity for the database sequence.
+ */
 @Data
 @TypeAlias("sequences")
 public class DatabaseSequence {

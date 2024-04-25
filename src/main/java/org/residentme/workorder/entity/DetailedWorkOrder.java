@@ -13,29 +13,76 @@ import org.springframework.data.annotation.TypeAlias;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+/**
+ * Entity for the detailed work order.
+ */
 @Data
 @TypeAlias("workorder")
 public class DetailedWorkOrder {
 
+	/**
+	 * The UUID of the work order.
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String uuid;
+	/**
+	 * The semanticId of the work order.
+	 */
 	private String semanticId;
+	/**
+	 * The owner of the work order.
+	 */
 	private String owner; // user UUID
+	/**
+	 * The status of the work order.
+	 */
 	private String status;
+	/**
+	 * The type of work order.
+
+	 */
 	private String workType;
+	/**
+	 * The priority of the work order.
+	 */
 	private String priority;
+	/**
+	 * The preferred time of the work order.
+	 */
 	private String preferredTime;
+	/**
+	 * The entry permission of the work order.
+	 */
 	private String entryPermission;
+	/**
+	 * The access instruction of the work order.
+	 */
 	private String accessInstruction;
+	/**
+	 * The detail of the work order.
+	 */
 	private String detail;
+	/**
+	 * The images of the work order.
+	 */
 	private List<String> images;
+	/**
+	 * The assigned staff of the work order.
+	 */
 	private String assignedStaff;
+	/**
+	 * The create time of the work order.
+	 */
 	private String createTime;
 
 	public DetailedWorkOrder() {
     }
 
+	/**
+	 * Constructor for the DetailedWorkOrder object.
+	 * @param workorder
+	 */
 	public DetailedWorkOrder(DetailedWorkOrder workorder) {
 		this.semanticId = workorder.getSemanticId();
 		this.owner = workorder.getOwner();
@@ -51,6 +98,18 @@ public class DetailedWorkOrder {
 		this.createTime = workorder.getCreateTime();
     }
 
+	/**
+	 * Constructor for the DetailedWorkOrder object.
+	 * @param semanticId The semanticId of the work order.
+	 * @param owner The owner of the work order.
+	 * @param workType The type of work order.
+	 * @param priority The priority of the work order.
+	 * @param preferredTime The preferred time of the work order.
+	 * @param entryPermission The entry permission of the work order.
+	 * @param accessInstruction The access instruction of the work order.
+	 * @param detail The detail of the work order.
+	 * @param images The images of the work order.
+	 */
 	public DetailedWorkOrder(String semanticId, String owner, String workType, String priority, String preferredTime,
 			String entryPermission, String accessInstruction, String detail, List<String> images) {
 		this.semanticId = semanticId;
