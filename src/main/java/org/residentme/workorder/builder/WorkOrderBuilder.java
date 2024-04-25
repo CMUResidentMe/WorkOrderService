@@ -8,8 +8,11 @@ import org.residentme.workorder.data.Priority;
 import org.residentme.workorder.data.WorkStatus;
 import org.residentme.workorder.entity.DetailedWorkOrder;
 
+/**
+ * Interface for building a DetailedWorkOrder object.
+ */
 public interface WorkOrderBuilder {
-	
+
 	void reset();
 	void setSemanticId(String semanticId);
 	void setOwner(String owner);

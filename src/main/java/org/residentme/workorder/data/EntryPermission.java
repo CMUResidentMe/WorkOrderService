@@ -1,5 +1,8 @@
 package org.residentme.workorder.data;
 
+/**
+ * Enum for the entry permission of a work order.
+ */
 public enum EntryPermission {
 	
 	CALLCONFIRM("CALLCONFIRM", "CALLCONFIRM"),

@@ -1,5 +1,8 @@
 package org.residentme.workorder.controller;
 
+/**
+ * Output class for the cancel work order endpoint.
+ */
 public class CancelWorkOrderOutPut {
 	
 	private String uuid;

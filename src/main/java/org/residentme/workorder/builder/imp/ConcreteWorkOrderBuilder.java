@@ -11,6 +11,11 @@ import org.residentme.workorder.entity.DetailedWorkOrder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * ConcreteWorkOrderBuilder is an implementation of the WorkOrderBuilder interface.
+ * It is responsible for building DetailedWorkOrder objects with the provided information.
+ * This class follows the Builder design pattern to construct work orders.
+ */
 @Component
 @Scope("prototype")
 public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
@@ -95,6 +100,9 @@ public class ConcreteWorkOrderBuilder implements WorkOrderBuilder{
 		this.images = images;
 	}
 
+	/**
+	 * Builds a DetailedWorkOrder object.
+	 */
 	@Override
 	public DetailedWorkOrder build() {
 		DetailedWorkOrder workOrder = new DetailedWorkOrder(this.semanticId, this.owner, this.workType, this.priority.value(), this.preferredTime, this.entryPermission, 
