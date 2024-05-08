@@ -21,7 +21,7 @@ cd CommunicationBoardService
 Replace `[repository-url]` with the actual URL of the repository.
 
 ### Step 2: Update Database Configuration
-Before building the project, update the database URI in the `src/main/resources/application.properties` file:
+Before building the project, update the database URI in the `application.yml` file:
 
 ```
 spring.data.mongodb.uri=your_own_db_uri
