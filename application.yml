@@ -4,7 +4,7 @@ spring:
   data:
     mongodb:
       database: WorkOrderServiceDB
-      uri: mongodb+srv://wenxiyan:wenxiyan@cluster0.xb8in0m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      uri: your_mongodb_uri
     jpa:
       show-sql: true
       properties:
